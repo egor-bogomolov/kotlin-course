@@ -13,18 +13,20 @@ fun read(): Graph {
 
 fun markCycle(v: Int, graph: Graph, from: Int? = null): Int? {
     graph.addToVisited(v)
-    for (to in graph.getEdgesFrom(v)) {
-        if (to != from && !graph.isVisited(to)) {
-            val stop = markCycle(to, graph, v)
-            if (stop != null) {
-                graph.addToCycle(v)
-                return if (stop == v) null else stop
+    graph.getEdgesFrom(v)
+            .filter { it != from }
+            .forEach {
+                if (!graph.isVisited(it)) {
+                    val stop = markCycle(it, graph, v)
+                    if (stop != null) {
+                        graph.addToCycle(v)
+                        return if (stop == v) null else stop
+                    }
+                } else {
+                    graph.addToCycle(v)
+                    return it
+                }
             }
-        } else if (to != from) {
-            graph.addToCycle(v)
-            return to
-        }
-    }
     return null
 }
 
