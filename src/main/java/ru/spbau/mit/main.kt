@@ -50,10 +50,10 @@ fun main(args: Array<String>) {
 }
 
 class Graph(val size: Int) {
-    private val edges = mutableListOf<MutableList<Int>>()
-    private val cycle = mutableListOf<Boolean>()
-    private val visited = mutableListOf<Boolean>()
-    private val distances = mutableListOf<Int>()
+    private val edges = MutableList(size) { mutableListOf<Int>() }
+    private val cycle = MutableList(size) { false }
+    private val visited = MutableList(size) { false }
+    private val distances = MutableList(size) { 0 }
 
     fun addEdge(from: Int, to: Int) {
         edges[from - 1].add(to - 1)
@@ -80,12 +80,4 @@ class Graph(val size: Int) {
 
     fun getDistances() = distances
 
-    init {
-        for (i in 0 until size) {
-            edges.add(mutableListOf())
-            cycle.add(false)
-            visited.add(false)
-            distances.add(0)
-        }
-    }
 }
