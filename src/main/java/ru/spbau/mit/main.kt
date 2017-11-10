@@ -2,47 +2,53 @@ package ru.spbau.mit
 
 import java.util.*
 
+var inCycle = mutableListOf<Boolean>()
+var visited = mutableListOf<Boolean>()
+var distanceTo = mutableListOf<Int>()
+
 fun read(): Graph {
     val reader = Scanner(System.`in`)
+    val size = reader.nextInt()
+    inCycle = MutableList(size) { false }
+    visited = MutableList(size) { false }
+    distanceTo = MutableList(size) { 0 }
     return Graph(reader.nextInt()).apply {
-        for (i in 0 until size) {
-            addEdge(reader.nextInt(), reader.nextInt())
-        }
+        repeat(size, { addEdge(reader.nextInt(), reader.nextInt()) })
     }
 }
 
 fun markCycle(v: Int, graph: Graph, from: Int? = null): Int? {
-    graph.addToVisited(v)
+    visited[v] = true
     graph.getEdgesFrom(v)
-            .filter { it != from }
-            .forEach {
-                if (!graph.isVisited(it)) {
-                    val stop = markCycle(it, graph, v)
+            .filter { to -> to != from }
+            .forEach { to ->
+                if (!visited[to]) {
+                    val stop = markCycle(to, graph, v)
                     if (stop != null) {
-                        graph.addToCycle(v)
+                        inCycle[v] = true
                         return if (stop == v) null else stop
                     }
                 } else {
-                    graph.addToCycle(v)
-                    return it
+                    inCycle[v] = true
+                    return to
                 }
             }
     return null
 }
 
 fun calcDist(v: Int, graph: Graph, from: Int? = null, distance: Int = 0) {
-    graph.setDistanceTo(v, distance)
+    distanceTo[v] = distance
     graph.getEdgesFrom(v)
-            .filter { it != from && !graph.isInCycle(it) }
-            .forEach { calcDist(it, graph, v, distance + 1) }
+            .filter { to -> to != from && !inCycle[to] }
+            .forEach { to -> calcDist(to, graph, v, distance + 1) }
 }
 
 fun solve(graph: Graph): MutableList<Int> {
     markCycle(0, graph)
     (0 until graph.size)
-            .filter { graph.isInCycle(it) }
+            .filter { inCycle[it] }
             .forEach { calcDist(it, graph) }
-    return graph.getDistances()
+    return distanceTo
 }
 
 fun main(args: Array<String>) {
@@ -51,33 +57,12 @@ fun main(args: Array<String>) {
 
 class Graph(val size: Int) {
     private val edges = MutableList(size) { mutableListOf<Int>() }
-    private val cycle = MutableList(size) { false }
-    private val visited = MutableList(size) { false }
-    private val distances = MutableList(size) { 0 }
 
     fun addEdge(from: Int, to: Int) {
         edges[from - 1].add(to - 1)
         edges[to - 1].add(from - 1)
     }
 
-    fun addToCycle(v: Int) {
-        cycle[v] = true
-    }
-
-    fun addToVisited(v: Int) {
-        visited[v] = true
-    }
-
-    fun isInCycle(v: Int) = cycle[v]
-
-    fun isVisited(v: Int?) = v != null && visited[v]
-
     fun getEdgesFrom(v: Int) = edges[v]
-
-    fun setDistanceTo(v: Int, distance: Int) {
-        distances[v] = distance
-    }
-
-    fun getDistances() = distances
 
 }
