@@ -13,7 +13,9 @@ fun read(): Graph {
     visited = MutableList(size) { false }
     distanceTo = MutableList(size) { 0 }
     return Graph(size).apply {
-        repeat(size, { addEdge(reader.nextInt(), reader.nextInt()) })
+        repeat(size) {
+            addEdge(reader.nextInt(), reader.nextInt())
+        }
     }
 }
 
