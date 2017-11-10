@@ -4,11 +4,11 @@ import java.util.*
 
 fun read(): Graph {
     val reader = Scanner(System.`in`)
-    val graph = Graph(reader.nextInt())
-    for (i in 0 until graph.size) {
-        graph.addEdge(reader.nextInt(), reader.nextInt())
+    return Graph(reader.nextInt()).apply {
+        for (i in 0 until size) {
+            addEdge(reader.nextInt(), reader.nextInt())
+        }
     }
-    return graph
 }
 
 fun markCycle(v: Int, graph: Graph, from: Int? = null): Int? {
