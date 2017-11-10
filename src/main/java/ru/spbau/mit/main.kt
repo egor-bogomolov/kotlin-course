@@ -12,7 +12,7 @@ fun read(): Graph {
     inCycle = MutableList(size) { false }
     visited = MutableList(size) { false }
     distanceTo = MutableList(size) { 0 }
-    return Graph(reader.nextInt()).apply {
+    return Graph(size).apply {
         repeat(size, { addEdge(reader.nextInt(), reader.nextInt()) })
     }
 }
