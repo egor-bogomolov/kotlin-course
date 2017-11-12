@@ -1,5 +1,6 @@
 package ru.spbau.mit
 
+import ru.spbau.mit.exceptions.InterpretationException
 import ru.spbau.mit.parser.FplBaseVisitor
 import ru.spbau.mit.parser.FplParser
 
@@ -23,7 +24,7 @@ class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>()
         val name = ctx!!.Identifier().text
         val parameterNames = ctx.parameterNames().Identifier().map { it.text }
         val block = ctx.blockWithBraces()
-        scope.identifyFunction(name, Function(parameterNames, scope, block))
+        scope.identifyFunction(name, Function(name, parameterNames, scope, block))
         return null
     }
 
@@ -96,7 +97,7 @@ class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>()
             "!=" -> if (first != second) 1 else 0
             "||" -> if (second != 0) 1 else 0
             "&&" -> if (second == 0) 0 else 1
-            else -> throw Exception("Unrecognized operation $op")
+            else -> throw InterpretationException("Unrecognized operation $op")
         }
     }
 
