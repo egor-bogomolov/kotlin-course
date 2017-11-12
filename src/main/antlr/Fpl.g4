@@ -16,10 +16,10 @@ statement
     : function
     | variable
     | expression
-    | while
-    | if
+    | whileStatement
+    | ifStatement
     | assignment
-    | return
+    | returnStatement
     ;
 
 function
@@ -43,11 +43,11 @@ parameterNames
     : (Identifier (',' Identifier)*)?
     ;
 
-while
+whileStatement
     : 'while' '(' expression ')' blockWithBraces
     ;
 
-if
+ifStatement
     : 'if' '(' expression ')' blockWithBraces ('else' blockWithBraces)?
     ;
 
@@ -55,7 +55,7 @@ assignment
     : Identifier '=' expression
     ;
 
-return
+returnStatement
     : 'return' expression
     ;
 

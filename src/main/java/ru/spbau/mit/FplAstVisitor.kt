@@ -3,7 +3,7 @@ package ru.spbau.mit
 import ru.spbau.mit.parser.FplBaseVisitor
 import ru.spbau.mit.parser.FplParser
 
-class FplAstVisitor(private var scope: Scope) : FplBaseVisitor<Int?>() {
+class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>() {
 
     override fun visitBlock(ctx: FplParser.BlockContext?): Int? {
         val upperScope = scope
@@ -46,7 +46,7 @@ class FplAstVisitor(private var scope: Scope) : FplBaseVisitor<Int?>() {
         return null
     }
 
-    override fun visitWhile(ctx: FplParser.WhileContext?): Int? {
+    override fun visitWhileStatement(ctx: FplParser.WhileStatementContext?): Int? {
         val condition = ctx!!.expression()
         while (visit(condition) != 0) {
             val result = visit(ctx.blockWithBraces())
@@ -55,7 +55,7 @@ class FplAstVisitor(private var scope: Scope) : FplBaseVisitor<Int?>() {
         return null
     }
 
-    override fun visitIf(ctx: FplParser.IfContext?): Int? {
+    override fun visitIfStatement(ctx: FplParser.IfStatementContext?): Int? {
         val condition = ctx!!.expression()
         if (visit(condition) != 0) {
             return visit(ctx.blockWithBraces(0))
@@ -70,7 +70,7 @@ class FplAstVisitor(private var scope: Scope) : FplBaseVisitor<Int?>() {
         return null
     }
 
-    override fun visitReturn(ctx: FplParser.ReturnContext?): Int {
+    override fun visitReturnStatement(ctx: FplParser.ReturnStatementContext?): Int {
         return visit(ctx!!.expression())!!
     }
 
@@ -116,5 +116,8 @@ class FplAstVisitor(private var scope: Scope) : FplBaseVisitor<Int?>() {
         return ctx!!.Literal().text.toInt()
     }
 
+    override fun aggregateResult(aggregate: Int?, nextResult: Int?): Int? {
+        return aggregate ?: nextResult
+    }
 
 }
