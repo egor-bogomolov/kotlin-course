@@ -8,7 +8,7 @@ eval returns [double value]
 
 additionExp returns [double value]
     :    m1=multiplyExp       {$value =  $m1.value;}
-         ( '+ ' m2=multiplyExp {$value += $m2.value;}
+         ( '+' m2=multiplyExp {$value += $m2.value;}
          | '-' m2=multiplyExp {$value -= $m2.value;}
          )*
     ;
