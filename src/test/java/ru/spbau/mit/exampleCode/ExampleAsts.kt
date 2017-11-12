@@ -4,18 +4,18 @@ import ru.spbau.mit.astBuilding.Ast
 import ru.spbau.mit.astBuilding.Ast.*
 
 object ExampleAsts {
-    val a = Identifier("a")
-    val b = Identifier("b")
-    val n = Identifier("n")
-    val m = Identifier("m")
-    val i = Identifier("i")
-    val fib = Identifier("fib")
-    val foo = Identifier("foo")
-    val bar = Identifier("bar")
-    val println0 = PrintlnFunctionCall(listOf(Literal(0)))
-    val println1 = PrintlnFunctionCall(listOf(Literal(1)))
+    private val a = Identifier("a")
+    private val b = Identifier("b")
+    private val n = Identifier("n")
+    private val m = Identifier("m")
+    private val i = Identifier("i")
+    private val fib = Identifier("fib")
+    private val foo = Identifier("foo")
+    private val bar = Identifier("bar")
+    private val println0 = PrintlnFunctionCall(listOf(Literal(0)))
+    private val println1 = PrintlnFunctionCall(listOf(Literal(1)))
 
-    val ast0 = Ast(Block(listOf(
+    val AST_0 = Ast(Block(listOf(
             Variable(a, Literal(10)),
             Variable(b, Literal(20)),
             IfStatement(
@@ -25,7 +25,7 @@ object ExampleAsts {
             )
     )))
 
-    val ast1 = Ast(Block(listOf(
+    val AST_1 = Ast(Block(listOf(
             Function(fib, listOf(n), BlockWithBraces(listOf(
                     IfStatement(
                             BinaryExpression(n, "<=", Literal(1)),
@@ -54,7 +54,7 @@ object ExampleAsts {
             )
     )))
 
-    val ast2 = Ast(Block(listOf(
+    val AST_2 = Ast(Block(listOf(
             Function(foo, listOf(n), BlockWithBraces(listOf(
                     Function(bar, listOf(m), BlockWithBraces(listOf(
                             ReturnStatement(BinaryExpression(m, "+", n))

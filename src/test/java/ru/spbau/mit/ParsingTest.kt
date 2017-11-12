@@ -28,17 +28,17 @@ class ParsingTest {
 
     @Test
     fun testExampleAst0() {
-        assertEquals(ExampleAsts.ast0, buildAst(file0))
+        assertEquals(ExampleAsts.AST_0, buildAst(file0))
     }
 
     @Test
     fun testExampleAst1() {
-        assertEquals(ExampleAsts.ast1, buildAst(file1))
+        assertEquals(ExampleAsts.AST_1, buildAst(file1))
     }
 
     @Test
     fun testExampleAst2() {
-        assertEquals(ExampleAsts.ast2, buildAst(file2))
+        assertEquals(ExampleAsts.AST_2, buildAst(file2))
     }
 
     @Test(expected = ParsingException::class)
