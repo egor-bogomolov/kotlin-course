@@ -1,0 +1,7 @@
+fun 3badlyNamedFoo(n) {
+    fun bar(m) {
+        return m + n
+    }
+
+    return bar(1)
+}
