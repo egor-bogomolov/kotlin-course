@@ -8,7 +8,7 @@ block
     : (statement)*
     ;
 
-block_with_braces
+blockWithBraces
     : '{' block '}'
     ;
 
@@ -23,7 +23,7 @@ statement
     ;
 
 function
-    : 'fun' Identifier '(' parameterNames ')' block_with_braces
+    : 'fun' Identifier '(' parameterNames ')' blockWithBraces
     ;
 
 arguments
@@ -31,8 +31,8 @@ arguments
     ;
 
 functionCall
-    : Identifier '(' arguments ')'
-    | PrintLn '(' arguments ')'
+    : Identifier '(' arguments ')' #namedFunctionCall
+    | PrintLn '(' arguments ')'    #printLnFunctionCall
     ;
 
 variable
@@ -44,11 +44,11 @@ parameterNames
     ;
 
 while
-    : 'while' '(' expression ')' block_with_braces
+    : 'while' '(' expression ')' blockWithBraces
     ;
 
 if
-    : 'if' '(' expression ')' block_with_braces ('else' (block_with_braces | if))?
+    : 'if' '(' expression ')' blockWithBraces ('else' blockWithBraces)?
     ;
 
 assignment
@@ -60,16 +60,16 @@ return
     ;
 
 expression
-    : functionCall
-    | Identifier
-    | Literal
-    | '(' expression ')'
-    | '-' expression
-    | expression op = ('*' | '/') expression
-    | expression op = ('+' | '-' | '%') expression
-    | expression op = ('>' | '<' | '>=' | '<=' | '==' | '!=') expression
-    | expression op = '&&' expression
-    | expression op = '||' expression
+    : functionCall                                                       #functionCallExpression
+    | Identifier                                                         #identifierExpression
+    | Literal                                                            #literalExpression
+    | '(' expression ')'                                                 #bracesExpression
+    | '-' expression                                                     #unaryMinusExpression
+    | expression op = ('*' | '/') expression                             #binaryExpression
+    | expression op = ('+' | '-' | '%') expression                       #binaryExpression
+    | expression op = ('>' | '<' | '>=' | '<=' | '==' | '!=') expression #binaryExpression
+    | expression op = '&&' expression                                    #binaryExpression
+    | expression op = '||' expression                                    #binaryExpression
     ;
 
 PrintLn

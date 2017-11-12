@@ -1,21 +1,15 @@
 package ru.spbau.mit
 
-import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
-import ru.spbau.mit.parser.ExpLexer
-import ru.spbau.mit.parser.ExpParser
-
-fun getGreeting(): String {
-    val words = mutableListOf<String>()
-    words.add("Hello,")
-    
-    words.add("world!")
-
-    return words.joinToString(separator = " ")
-}
+import org.antlr.v4.runtime.CommonTokenStream
+import ru.spbau.mit.parser.FplLexer
+import ru.spbau.mit.parser.FplParser
 
 fun main(args: Array<String>) {
-    val expLexer = ExpLexer(CharStreams.fromString("(1 +2)"))
-    println(ExpParser(BufferedTokenStream(expLexer)).eval().value)
-    println(getGreeting())
+    if (args.isEmpty()) {
+
+    }
+    val lexer = FplLexer(CharStreams.fromFileName(args[0]))
+    val parser = FplParser(CommonTokenStream(lexer))
+    parser.buildParseTree = true
 }
