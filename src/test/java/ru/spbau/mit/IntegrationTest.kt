@@ -15,7 +15,6 @@ class IntegrationTest {
     val file1 = pathToExamples + "example1.fpl"
     val file2 = pathToExamples + "example2.fpl"
     val file3 = pathToExamples + "example3.fpl"
-    val file4 = pathToExamples + "example4.fpl"
 
     private val outContent = ByteArrayOutputStream()
     private val errContent = ByteArrayOutputStream()
@@ -51,12 +50,8 @@ class IntegrationTest {
     }
 
     @Test(expected = InterpretationException::class)
-    fun testExampleAst3() {
+    fun testInterpretationException() {
         runFile(file3)
     }
 
-    @Test(expected = ParsingException::class)
-    fun testExampleAst4() {
-        runFile(file4)
-    }
 }
