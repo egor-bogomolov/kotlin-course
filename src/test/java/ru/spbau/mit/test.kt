@@ -9,8 +9,6 @@ import kotlin.test.assertTrue
 class TestSource {
 
     private val size = 7
-    private val correctDistances = listOf(1, 2, 0, 0, 3, 1, 1)
-    private val correctVisited = listOf(false, true, true, true, false, false, true)
     private val correctCycle = listOf(false, false, true, true, false, true, true)
     private var graph: Graph = Graph(size)
 
@@ -24,36 +22,9 @@ class TestSource {
         graph.addEdge(6, 7)
         graph.addEdge(3, 7)
         graph.addEdge(7, 5)
-    }
-
-    @Test
-    fun testGraphDistances() {
-        for (v in 0 until size) {
-            graph.setDistanceTo(v, correctDistances[v])
-        }
-        assertEquals(correctDistances, graph.getDistances())
-    }
-
-    @Test
-    fun testGraphVisited() {
-        for (v in 0 until size) {
-            assertFalse { graph.isVisited(v) }
-            if (correctVisited[v]) {
-                graph.addToVisited(v)
-                assertTrue { graph.isVisited(v) }
-            }
-        }
-    }
-
-    @Test
-    fun testGraphCycle() {
-        for (v in 0 until size) {
-            assertFalse { graph.isInCycle(v) }
-            if (correctCycle[v]) {
-                graph.addToCycle(v)
-                assertTrue { graph.isInCycle(v) }
-            }
-        }
+        inCycle = MutableList(size) { false }
+        visited = MutableList(size) { false }
+        distanceTo = MutableList(size) { 0 }
     }
 
     @Test
@@ -72,7 +43,7 @@ class TestSource {
         markCycle(0, graph)
         for (v in 0 until size) {
             println(v)
-            assertEquals(correctCycle[v], graph.isInCycle(v))
+            assertEquals(correctCycle[v], inCycle[v])
         }
     }
 
@@ -80,11 +51,11 @@ class TestSource {
     fun testCalcDist() {
         markCycle(0, graph)
         calcDist(2, graph)
-        assertEquals(2, graph.getDistances()[0])
-        assertEquals(1, graph.getDistances()[1])
-        assertEquals(0, graph.getDistances()[2])
+        assertEquals(2, distanceTo[0])
+        assertEquals(1, distanceTo[1])
+        assertEquals(0, distanceTo[2])
         calcDist(6, graph)
-        assertEquals(1, graph.getDistances()[4])
-        assertEquals(0, graph.getDistances()[6])
+        assertEquals(1, distanceTo[4])
+        assertEquals(0, distanceTo[6])
     }
 }
