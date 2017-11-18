@@ -45,9 +45,9 @@ interface BaseElement : Element {
  */
 @TexMarker
 abstract class InlineCommand(
-        val name: String,
-        val args: List<String>,
-        vararg val extraArgs: String
+        private val name: String,
+        private val args: List<String>,
+        private vararg val extraArgs: String
 ) : BaseElement {
 
     override fun render(builder: StringBuilder) {
@@ -69,7 +69,7 @@ abstract class BaseContentCommand(
         open vararg val extraArgs: String
 ) : BaseElement {
 
-    val children = arrayListOf<Element>()
+    private val children = arrayListOf<Element>()
 
     operator fun String.unaryPlus() {
         children.add(TextElement(this))
@@ -104,7 +104,7 @@ abstract class BaseContentCommand(
         return element
     }
 
-    fun addInlineCommand(command: InlineCommand) {
+    private fun addInlineCommand(command: InlineCommand) {
         children.add(command)
     }
 
@@ -257,6 +257,15 @@ fun resultTex() = document {
                    |val a = 1
                    |
                 """
+        }
+
+        enumerate {
+            item {
+
+            }
+            item {
+
+            }
         }
     }
 }.toOutputStream(System.out)
