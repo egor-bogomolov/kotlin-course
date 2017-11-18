@@ -87,7 +87,6 @@ abstract class BaseContentCommand(
     }
 
     private fun renderEnd(builder: StringBuilder) {
-        builder.nextLine()
         builder.append("\\end{$name}")
         builder.nextLine()
     }
@@ -110,6 +109,12 @@ abstract class BaseContentCommand(
 
     fun customInlineTag(name: String, args: List<String>, vararg extraArgs: String)
             = addInlineCommand(CustomInlineTag(name, args, *extraArgs))
+
+    fun left(init: Left.() -> Unit) = initElement(Left(), init)
+
+    fun center(init: Center.() -> Unit) = initElement(Center(), init)
+
+    fun right(init: Right.() -> Unit) = initElement(Right(), init)
 }
 
 /**
@@ -176,6 +181,12 @@ class Item : BlockCommand("", emptyList()) {
     }
 
 }
+
+class Left : BlockCommand("flushleft", emptyList())
+
+class Center : BlockCommand("center", emptyList())
+
+class Right : BlockCommand("flushright", emptyList())
 
 class DocumentClass(
         documentClass: String,
@@ -257,6 +268,9 @@ fun resultTex() = document {
                    |val a = 1
                    |
                 """
+            center {
+                +"Some text"
+            }
         }
 
         enumerate {
