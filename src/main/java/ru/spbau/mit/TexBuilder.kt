@@ -248,38 +248,3 @@ fun document(init: Document.() -> Unit): Document {
     doc.init()
     return doc
 }
-
-fun resultTex() = document {
-    documentclass("beamer")
-    usepackage("babel", "russian" /* varargs */)
-    frame("frametitle", "arg1", "arg2") {
-        itemize {
-                item {
-                    math {
-                        +"2 + 48"
-                        customInlineTag("frac", listOf("1", "2"))
-                    }
-                }
-        }
-
-        // begin{pyglist}[language=kotlin]...\end{pyglist}
-        customBlockTag("pyglist", "language=kotlin") {
-            +"""
-                   |val a = 1
-                   |
-                """
-            center {
-                +"Some text"
-            }
-        }
-
-        enumerate {
-            item {
-
-            }
-            item {
-
-            }
-        }
-    }
-}.toOutputStream(System.out)
