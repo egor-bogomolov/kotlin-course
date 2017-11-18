@@ -205,13 +205,14 @@ class Document : BlockCommand("document", emptyList()) {
     private val packages = arrayListOf<Package>()
 
     override fun render(builder: StringBuilder) {
+        if (documentClass == null) throw TexBuilderException("Document should have a document class.")
         documentClass?.render(builder)
         packages.forEach { it.render(builder) }
         super.render(builder)
     }
 
     fun documentclass(className: String, vararg extraArgs: String) {
-        if (documentClass != null) throw Exception()
+        if (documentClass != null) throw TexBuilderException("Document should have only one document class.")
         documentClass = DocumentClass(className, *extraArgs)
     }
 

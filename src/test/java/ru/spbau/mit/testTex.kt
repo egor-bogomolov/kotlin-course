@@ -252,4 +252,26 @@ class TestSource {
             |\end{document}
             |""".trimMargin(), doc.toString())
     }
+
+    @Test(expected = TexBuilderException::class)
+    fun testNoClass() {
+        document {
+            usepackage("babel", "russian", "english")
+            usepackage("amsmath")
+            usepackage("geometry",
+                    "a4paper", "left=15mm", "right=15mm", "top=30mm", "bottom=20mm")
+        }.toString()
+    }
+
+    @Test(expected = TexBuilderException::class)
+    fun testMultipleClasses() {
+        document {
+            documentclass("article", "12pt")
+            usepackage("babel", "russian", "english")
+            usepackage("amsmath")
+            usepackage("geometry",
+                    "a4paper", "left=15mm", "right=15mm", "top=30mm", "bottom=20mm")
+            documentclass("article", "14pt")
+        }
+    }
 }
