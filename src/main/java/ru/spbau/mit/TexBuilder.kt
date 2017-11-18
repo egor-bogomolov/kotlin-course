@@ -2,13 +2,24 @@ package ru.spbau.mit
 
 import java.io.OutputStream
 
+class RenderTarget(private val target: Any) {
+
+    fun append(string: String) {
+        when (target) {
+            is StringBuilder -> target.append(string)
+            is OutputStream -> target.write(string.toByteArray())
+            else -> throw Exception("Invalid render target.")
+        }
+    }
+}
+
 interface Element {
-    fun render(builder: StringBuilder)
+    fun render(target: RenderTarget)
 }
 
 class TextElement(private val text: String) : Element {
-    override fun render(builder: StringBuilder) {
-        builder.append("$text\n")
+    override fun render(target: RenderTarget) {
+        target.append("$text\n")
     }
 }
 
@@ -21,20 +32,20 @@ interface BaseElement : Element {
     /**
      * Introduced since functions (i.e. \frac{}{}) can have more than one pair of braces.
      */
-    fun StringBuilder.addArgs(args: List<String>) {
+    fun RenderTarget.addArgs(args: List<String>) {
         if (args.isNotEmpty()) {
             append(args.joinToString("}{", "{", "}"))
         }
     }
 
-    fun StringBuilder.addExtraArgs(extraArgs: Array<out String>) {
+    fun RenderTarget.addExtraArgs(extraArgs: Array<out String>) {
         if (extraArgs.isNotEmpty()) {
             append(extraArgs.joinToString(",", "[", "]"))
         }
     }
 
-    fun StringBuilder.nextLine() {
-        append('\n')
+    fun RenderTarget.nextLine() {
+        append("\n")
     }
 
 }
@@ -50,11 +61,11 @@ abstract class InlineCommand(
         private vararg val extraArgs: String
 ) : BaseElement {
 
-    override fun render(builder: StringBuilder) {
-        builder.append("\\$name")
-        builder.addExtraArgs(extraArgs)
-        builder.addArgs(args)
-        builder.nextLine()
+    override fun render(target: RenderTarget) {
+        target.append("\\$name")
+        target.addExtraArgs(extraArgs)
+        target.addArgs(args)
+        target.nextLine()
     }
 
 }
@@ -75,26 +86,26 @@ abstract class BaseContentCommand(
         children.add(TextElement(this))
     }
 
-    private fun renderBegin(builder: StringBuilder) {
-        builder.append("\\begin{$name}")
-        builder.addExtraArgs(extraArgs)
-        builder.addArgs(args)
-        builder.nextLine()
+    private fun renderBegin(target: RenderTarget) {
+        target.append("\\begin{$name}")
+        target.addExtraArgs(extraArgs)
+        target.addArgs(args)
+        target.nextLine()
     }
 
-    fun renderChildren(builder: StringBuilder) {
-        children.forEach { it.render(builder) }
+    fun renderChildren(target: RenderTarget) {
+        children.forEach { it.render(target) }
     }
 
-    private fun renderEnd(builder: StringBuilder) {
-        builder.append("\\end{$name}")
-        builder.nextLine()
+    private fun renderEnd(target: RenderTarget) {
+        target.append("\\end{$name}")
+        target.nextLine()
     }
 
-    override fun render(builder: StringBuilder) {
-        renderBegin(builder)
-        renderChildren(builder)
-        renderEnd(builder)
+    override fun render(target: RenderTarget) {
+        renderBegin(target)
+        renderChildren(target)
+        renderEnd(target)
     }
 
     protected fun <T : Element> initElement(element: T, init: T.() -> Unit): T {
@@ -165,19 +176,19 @@ abstract class ListCommand(
 
 class Math : BaseContentCommand("", emptyList()) {
 
-    override fun render(builder: StringBuilder) {
-        builder.append("$$\n")
-        renderChildren(builder)
-        builder.append("$$\n")
+    override fun render(target: RenderTarget) {
+        target.append("$$\n")
+        renderChildren(target)
+        target.append("$$\n")
     }
 
 }
 
 class Item : BlockCommand("", emptyList()) {
 
-    override fun render(builder: StringBuilder) {
-        builder.append("\\item\n")
-        renderChildren(builder)
+    override fun render(target: RenderTarget) {
+        target.append("\\item\n")
+        renderChildren(target)
     }
 
 }
@@ -204,11 +215,11 @@ class Document : BlockCommand("document", emptyList()) {
 
     private val packages = arrayListOf<Package>()
 
-    override fun render(builder: StringBuilder) {
+    override fun render(target: RenderTarget) {
         if (documentClass == null) throw TexBuilderException("Document should have a document class.")
-        documentClass?.render(builder)
-        packages.forEach { it.render(builder) }
-        super.render(builder)
+        documentClass?.render(target)
+        packages.forEach { it.render(target) }
+        super.render(target)
     }
 
     fun documentclass(className: String, vararg extraArgs: String) {
@@ -222,12 +233,12 @@ class Document : BlockCommand("document", emptyList()) {
 
     override fun toString(): String {
         val stringBuilder = StringBuilder()
-        render(stringBuilder)
+        render(RenderTarget(stringBuilder))
         return stringBuilder.toString()
     }
 
     fun toOutputStream(stream: OutputStream) {
-        stream.write(toString().toByteArray())
+        render(RenderTarget(stream))
     }
 }
 
