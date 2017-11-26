@@ -71,9 +71,7 @@ class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>()
         return null
     }
 
-    override fun visitReturnStatement(ctx: FplParser.ReturnStatementContext): Int {
-        return visit(ctx.expression())!!
-    }
+    override fun visitReturnStatement(ctx: FplParser.ReturnStatementContext): Int = visit(ctx.expression())!!
 
     override fun visitBinaryExpression(ctx: FplParser.BinaryExpressionContext): Int {
         val first = visit(ctx.expression(0))!!
@@ -101,24 +99,15 @@ class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>()
         }
     }
 
-    override fun visitUnaryMinusExpression(ctx: FplParser.UnaryMinusExpressionContext): Int {
-        return -visit(ctx.expression())!!
-    }
+    override fun visitUnaryMinusExpression(ctx: FplParser.UnaryMinusExpressionContext): Int = -visit(ctx.expression())!!
 
-    override fun visitIdentifierExpression(ctx: FplParser.IdentifierExpressionContext): Int {
-        return scope.getVariableValue(ctx.text)
-    }
+    override fun visitIdentifierExpression(ctx: FplParser.IdentifierExpressionContext): Int =
+            scope.getVariableValue(ctx.text)
 
-    override fun visitBracesExpression(ctx: FplParser.BracesExpressionContext): Int {
-        return visit(ctx.expression())!!
-    }
+    override fun visitBracesExpression(ctx: FplParser.BracesExpressionContext): Int = visit(ctx.expression())!!
 
-    override fun visitLiteralExpression(ctx: FplParser.LiteralExpressionContext?): Int {
-        return ctx!!.Literal().text.toInt()
-    }
+    override fun visitLiteralExpression(ctx: FplParser.LiteralExpressionContext?): Int = ctx!!.Literal().text.toInt()
 
-    override fun aggregateResult(aggregate: Int?, nextResult: Int?): Int? {
-        return aggregate ?: nextResult
-    }
+    override fun aggregateResult(aggregate: Int?, nextResult: Int?): Int? = aggregate ?: nextResult
 
 }
