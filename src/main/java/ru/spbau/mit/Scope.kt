@@ -1,6 +1,7 @@
 package ru.spbau.mit
 
 import ru.spbau.mit.exceptions.InterpretationException
+import ru.spbau.mit.exceptions.mustBeNotNull
 
 class Scope(private val parentScope: Scope? = null) {
     private val functions = HashMap<String, Function>()
@@ -8,8 +9,7 @@ class Scope(private val parentScope: Scope? = null) {
 
     fun getVariableValue(name: String): Int
             = variables[name]
-            ?: parentScope?.getVariableValue(name)
-            ?: throw InterpretationException("Variable $name isn't defined")
+            ?: parentScope.mustBeNotNull().getVariableValue(name)
 
     fun initializeVariable(name: String) {
         if (name in variables) throw InterpretationException("Variable $name is already defined in the scope")
@@ -18,7 +18,7 @@ class Scope(private val parentScope: Scope? = null) {
 
     fun setVariableValue(name: String, value: Int) {
         if (name !in variables) {
-            parentScope?.setVariableValue(name, value) ?: throw InterpretationException("Variable $name isn't defined")
+            parentScope.mustBeNotNull().setVariableValue(name, value)
         } else {
             variables[name] = value
         }
@@ -31,7 +31,6 @@ class Scope(private val parentScope: Scope? = null) {
 
     fun getFunction(name: String): Function
             = functions[name]
-            ?: parentScope?.getFunction(name)
-            ?: throw InterpretationException("Function $name isn't defined")
+            ?: parentScope.mustBeNotNull().getFunction(name)
 
 }
