@@ -13,13 +13,13 @@ import kotlin.test.assertEquals
 
 class ParsingTest {
 
-    val pathToExamples = "src/test/java/ru/spbau/mit/exampleCode/"
-    val file0 = pathToExamples + "example0.fpl"
-    val file1 = pathToExamples + "example1.fpl"
-    val file2 = pathToExamples + "example2.fpl"
-    val file4 = pathToExamples + "example4.fpl"
+    private val pathToExamples = "src/test/java/ru/spbau/mit/exampleCode/"
+    private val file0 = pathToExamples + "example0.fpl"
+    private val file1 = pathToExamples + "example1.fpl"
+    private val file2 = pathToExamples + "example2.fpl"
+    private val file4 = pathToExamples + "example4.fpl"
 
-    fun buildAst(fileName: String): Ast {
+    private fun buildAst(fileName: String): Ast {
         val lexer = FplLexer(CharStreams.fromFileName(fileName))
         val parser = FplParser(CommonTokenStream(lexer))
         parser.buildParseTree = true

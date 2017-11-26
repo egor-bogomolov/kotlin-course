@@ -5,16 +5,15 @@ import org.junit.After
 import java.io.PrintStream
 import org.junit.Before
 import ru.spbau.mit.exceptions.InterpretationException
-import ru.spbau.mit.exceptions.ParsingException
 import java.io.ByteArrayOutputStream
 import kotlin.test.assertEquals
 
 class IntegrationTest {
-    val pathToExamples = "src/test/java/ru/spbau/mit/exampleCode/"
-    val file0 = pathToExamples + "example0.fpl"
-    val file1 = pathToExamples + "example1.fpl"
-    val file2 = pathToExamples + "example2.fpl"
-    val file3 = pathToExamples + "example3.fpl"
+    private val pathToExamples = "src/test/java/ru/spbau/mit/exampleCode/"
+    private val file0 = pathToExamples + "example0.fpl"
+    private val file1 = pathToExamples + "example1.fpl"
+    private val file2 = pathToExamples + "example2.fpl"
+    private val file3 = pathToExamples + "example3.fpl"
 
     private val outContent = ByteArrayOutputStream()
     private val errContent = ByteArrayOutputStream()
