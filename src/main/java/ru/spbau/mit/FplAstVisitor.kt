@@ -28,13 +28,20 @@ class FplAstVisitor(private var scope: Scope = Scope()) : FplBaseVisitor<Int?>()
         return null
     }
 
-    override fun visitNamedFunctionCall(ctx: FplParser.NamedFunctionCallContext): Int {
+    override fun visitFunctionCall(ctx: FplParser.FunctionCallContext): Int? {
         val name = ctx.Identifier().text
+        return when (name) {
+            "println" -> printLnFunctionCall(ctx)
+            else -> namedFunctionCall(name, ctx)
+        }
+    }
+
+    private fun namedFunctionCall(name: String, ctx: FplParser.FunctionCallContext): Int {
         val arguments = ctx.arguments().expression().map { visit(it).mustBeNotNull() }
         return scope.getFunction(name).invoke(arguments)
     }
 
-    override fun visitPrintLnFunctionCall(ctx: FplParser.PrintLnFunctionCallContext): Int? {
+    private fun printLnFunctionCall(ctx: FplParser.FunctionCallContext): Int? {
         val arguments = ctx.arguments().expression().map { visit(it) }
         println(arguments.joinToString(" "))
         return null

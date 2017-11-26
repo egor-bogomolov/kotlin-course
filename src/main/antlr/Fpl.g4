@@ -31,8 +31,7 @@ arguments
     ;
 
 functionCall
-    : Identifier '(' arguments ')' #namedFunctionCall
-    | PrintLn '(' arguments ')'    #printLnFunctionCall
+    : Identifier '(' arguments ')'
     ;
 
 variable
@@ -70,10 +69,6 @@ expression
     | expression op = ('>' | '<' | '>=' | '<=' | '==' | '!=') expression #binaryExpression
     | expression op = '&&' expression                                    #binaryExpression
     | expression op = '||' expression                                    #binaryExpression
-    ;
-
-PrintLn
-    : 'println'
     ;
 
 Comment
