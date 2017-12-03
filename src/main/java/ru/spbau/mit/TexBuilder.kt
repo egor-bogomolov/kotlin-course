@@ -98,7 +98,7 @@ abstract class BaseContentCommand(
         target.nextLine()
     }
 
-    fun renderChildren(target: Renderer) {
+    protected fun renderChildren(target: Renderer) {
         children.forEach { it.render(target) }
     }
 
@@ -236,10 +236,8 @@ class Document : BlockCommand("document", emptyList()) {
         packages.add(Package(packageName, *extraArgs))
     }
 
-    override fun toString(): String {
-        val stringBuilder = StringBuilder()
-        render(StringBuilderRenderer(stringBuilder))
-        return stringBuilder.toString()
+    override fun toString() = buildString {
+        render(StringBuilderRenderer(this))
     }
 
     fun toOutputStream(stream: OutputStream) {
