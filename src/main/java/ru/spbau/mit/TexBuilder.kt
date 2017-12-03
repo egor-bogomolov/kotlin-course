@@ -2,23 +2,28 @@ package ru.spbau.mit
 
 import java.io.OutputStream
 
-class RenderTarget(private val target: Any) {
+interface Renderer {
+    fun append(string: String)
+}
 
-    fun append(string: String) {
-        when (target) {
-            is StringBuilder -> target.append(string)
-            is OutputStream -> target.write(string.toByteArray())
-            else -> throw Exception("Invalid render target.")
-        }
+class StringBuilderRenderer(private val target: StringBuilder) : Renderer {
+    override fun append(string: String) {
+        target.append(string)
+    }
+}
+
+class OutputStreamRenderer(private val target: OutputStream) : Renderer {
+    override fun append(string: String) {
+        target.write(string.toByteArray())
     }
 }
 
 interface Element {
-    fun render(target: RenderTarget)
+    fun render(target: Renderer)
 }
 
 class TextElement(private val text: String) : Element {
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         target.append("$text\n")
     }
 }
@@ -32,19 +37,19 @@ interface BaseElement : Element {
     /**
      * Introduced since functions (i.e. \frac{}{}) can have more than one pair of braces.
      */
-    fun RenderTarget.addArgs(args: List<String>) {
+    fun Renderer.addArgs(args: List<String>) {
         if (args.isNotEmpty()) {
             append(args.joinToString("}{", "{", "}"))
         }
     }
 
-    fun RenderTarget.addExtraArgs(extraArgs: Array<out String>) {
+    fun Renderer.addExtraArgs(extraArgs: Array<out String>) {
         if (extraArgs.isNotEmpty()) {
             append(extraArgs.joinToString(",", "[", "]"))
         }
     }
 
-    fun RenderTarget.nextLine() {
+    fun Renderer.nextLine() {
         append("\n")
     }
 
@@ -61,7 +66,7 @@ abstract class InlineCommand(
         private vararg val extraArgs: String
 ) : BaseElement {
 
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         target.append("\\$name")
         target.addExtraArgs(extraArgs)
         target.addArgs(args)
@@ -86,23 +91,23 @@ abstract class BaseContentCommand(
         children.add(TextElement(this))
     }
 
-    private fun renderBegin(target: RenderTarget) {
+    private fun renderBegin(target: Renderer) {
         target.append("\\begin{$name}")
         target.addExtraArgs(extraArgs)
         target.addArgs(args)
         target.nextLine()
     }
 
-    fun renderChildren(target: RenderTarget) {
+    fun renderChildren(target: Renderer) {
         children.forEach { it.render(target) }
     }
 
-    private fun renderEnd(target: RenderTarget) {
+    private fun renderEnd(target: Renderer) {
         target.append("\\end{$name}")
         target.nextLine()
     }
 
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         renderBegin(target)
         renderChildren(target)
         renderEnd(target)
@@ -176,7 +181,7 @@ abstract class ListCommand(
 
 class Math : BaseContentCommand("", emptyList()) {
 
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         target.append("$$\n")
         renderChildren(target)
         target.append("$$\n")
@@ -186,7 +191,7 @@ class Math : BaseContentCommand("", emptyList()) {
 
 class Item : BlockCommand("", emptyList()) {
 
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         target.append("\\item\n")
         renderChildren(target)
     }
@@ -215,7 +220,7 @@ class Document : BlockCommand("document", emptyList()) {
 
     private val packages = arrayListOf<Package>()
 
-    override fun render(target: RenderTarget) {
+    override fun render(target: Renderer) {
         if (documentClass == null) throw TexBuilderException("Document should have a document class.")
         documentClass?.render(target)
         packages.forEach { it.render(target) }
@@ -233,12 +238,12 @@ class Document : BlockCommand("document", emptyList()) {
 
     override fun toString(): String {
         val stringBuilder = StringBuilder()
-        render(RenderTarget(stringBuilder))
+        render(StringBuilderRenderer(stringBuilder))
         return stringBuilder.toString()
     }
 
     fun toOutputStream(stream: OutputStream) {
-        render(RenderTarget(stream))
+        render(OutputStreamRenderer(stream))
     }
 }
 
