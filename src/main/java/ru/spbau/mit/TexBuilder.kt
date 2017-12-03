@@ -18,6 +18,10 @@ class OutputStreamRenderer(private val target: OutputStream) : Renderer {
     }
 }
 
+@DslMarker
+annotation class TexMarker
+
+@TexMarker
 interface Element {
     fun render(target: Renderer)
 }
@@ -28,28 +32,24 @@ class TextElement(private val text: String) : Element {
     }
 }
 
-@DslMarker
-annotation class TexMarker
-
-@TexMarker
-interface BaseElement : Element {
+abstract class BaseElement : Element {
 
     /**
      * Introduced since functions (i.e. \frac{}{}) can have more than one pair of braces.
      */
-    fun Renderer.addArgs(args: List<String>) {
+    protected fun Renderer.addArgs(args: List<String>) {
         if (args.isNotEmpty()) {
             append(args.joinToString("}{", "{", "}"))
         }
     }
 
-    fun Renderer.addExtraArgs(extraArgs: Array<out String>) {
+    protected fun Renderer.addExtraArgs(extraArgs: Array<out String>) {
         if (extraArgs.isNotEmpty()) {
             append(extraArgs.joinToString(",", "[", "]"))
         }
     }
 
-    fun Renderer.nextLine() {
+    protected fun Renderer.nextLine() {
         append("\n")
     }
 
@@ -59,12 +59,11 @@ interface BaseElement : Element {
  * Command of type
  * \name[...]{...}
  */
-@TexMarker
 abstract class InlineCommand(
         private val name: String,
         private val args: List<String>,
         private vararg val extraArgs: String
-) : BaseElement {
+) : BaseElement() {
 
     override fun render(target: Renderer) {
         target.append("\\$name")
@@ -78,12 +77,11 @@ abstract class InlineCommand(
 /**
  * Common logic for all commands that can include other commands or text.
  */
-@TexMarker
 abstract class BaseContentCommand(
-        open val name: String,
-        open val args: List<String>,
-        open vararg val extraArgs: String
-) : BaseElement {
+        private val name: String,
+        private val args: List<String>,
+        private vararg val extraArgs: String
+) : BaseElement() {
 
     private val children = arrayListOf<Element>()
 
@@ -139,11 +137,10 @@ abstract class BaseContentCommand(
  * ...
  * \end{name}
  */
-@TexMarker
 abstract class BlockCommand(
-        override val name: String,
-        override val args: List<String>,
-        override vararg val extraArgs: String
+        name: String,
+        args: List<String>,
+        vararg extraArgs: String
 ) : BaseContentCommand(name, args, *extraArgs) {
 
     fun frame(name: String, vararg extraArgs: String, init: Frame.() -> Unit)
@@ -168,11 +165,10 @@ abstract class BlockCommand(
  *  ...
  * \end{name}
  */
-@TexMarker
 abstract class ListCommand(
-        override val name: String,
-        override val args: List<String>,
-        override vararg val extraArgs: String
+        name: String,
+        args: List<String>,
+        vararg extraArgs: String
 ) : BaseContentCommand(name, args, *extraArgs) {
 
     fun item(init: Item.() -> Unit) = initElement(Item(), init)
