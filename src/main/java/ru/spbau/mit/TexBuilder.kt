@@ -255,8 +255,4 @@ class CustomBlockTag(name: String, vararg extraArgs: String) : BlockCommand(name
 
 class CustomInlineTag(name: String, args: List<String>, vararg extraArgs: String) : InlineCommand(name, args, *extraArgs)
 
-fun document(init: Document.() -> Unit): Document {
-    val doc = Document()
-    doc.init()
-    return doc
-}
+fun document(init: Document.() -> Unit) = Document().apply(init)
